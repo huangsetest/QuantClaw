@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <curl/curl.h>
 #include <nlohmann/json.hpp>
@@ -43,6 +44,7 @@ convert_tools_to_responses(const std::vector<nlohmann::json>& tools) {
 nlohmann::json build_input_items(const std::vector<Message>& messages,
                                  std::string* instructions) {
   nlohmann::json input = nlohmann::json::array();
+  std::unordered_set<std::string> pending_tool_result_ids;
 
   for (const auto& msg : messages) {
     const std::string text = msg.text();
@@ -67,7 +69,8 @@ nlohmann::json build_input_items(const std::vector<Message>& messages,
 
     if (has_tool_result) {
       for (const auto& block : msg.content) {
-        if (block.type == "tool_result") {
+        if (block.type == "tool_result" &&
+            pending_tool_result_ids.erase(block.tool_use_id) > 0) {
           input.push_back({{"type", "function_call_output"},
                            {"call_id", block.tool_use_id},
                            {"output", block.content}});
@@ -88,9 +91,16 @@ nlohmann::json build_input_items(const std::vector<Message>& messages,
       if (!text.empty()) {
         input.push_back({{"role", "assistant"}, {"content", text}});
       }
+      pending_tool_result_ids.clear();
+      for (const auto& block : msg.content) {
+        if (block.type == "tool_use" && !block.id.empty()) {
+          pending_tool_result_ids.insert(block.id);
+        }
+      }
       continue;
     }
 
+    pending_tool_result_ids.clear();
     input.push_back({{"role", msg.role}, {"content", text}});
   }
 
