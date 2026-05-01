@@ -515,8 +515,8 @@ TEST(OpenAIProviderCompatibilityTest,
   // Valid assistant tool_use turn
   quantclaw::Message assistant;
   assistant.role = "assistant";
-  assistant.content.push_back(
-      quantclaw::ContentBlock::MakeToolUse("valid-1", "read", {{"path", "/y"}}));
+  assistant.content.push_back(quantclaw::ContentBlock::MakeToolUse(
+      "valid-1", "read", {{"path", "/y"}}));
   request.messages.push_back(std::move(assistant));
 
   // Matching tool_result for valid-1

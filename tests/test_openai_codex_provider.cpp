@@ -236,9 +236,8 @@ TEST(OpenAICodexProviderTest, ChatCompletionSkipsOrphanToolResults) {
 
   Message assistant_tool_call;
   assistant_tool_call.role = "assistant";
-  assistant_tool_call.content.push_back(
-      ContentBlock::MakeToolUse("matched-call", "read_file",
-                                {{"path", "/tmp/a.txt"}}));
+  assistant_tool_call.content.push_back(ContentBlock::MakeToolUse(
+      "matched-call", "read_file", {{"path", "/tmp/a.txt"}}));
   request.messages.push_back(std::move(assistant_tool_call));
 
   Message matched_tool_result;
