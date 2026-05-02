@@ -31,7 +31,11 @@ export function renderDebug(props: DebugProps) {
   const info = securitySummary?.info ?? 0;
   const securityTone = critical > 0 ? "danger" : warn > 0 ? "warn" : "success";
   const securityLabel =
-    critical > 0 ? `${critical} critical` : warn > 0 ? `${warn} warnings` : "No critical issues";
+    critical > 0
+      ? t("debug.securityCritical", { count: String(critical) })
+      : warn > 0
+        ? t("debug.securityWarnings", { count: String(warn) })
+        : t("debug.securityNoCriticalIssues");
 
   return html`
     <section class="grid grid-cols-2">
@@ -51,8 +55,11 @@ export function renderDebug(props: DebugProps) {
             ${
               securitySummary
                 ? html`<div class="callout ${securityTone}" style="margin-top: 8px;">
-                  Security audit: ${securityLabel}${info > 0 ? ` · ${info} info` : ""}. Run
-                  <span class="mono">quantclaw security audit --deep</span> for details.
+                  ${t("debug.securityAudit")}: ${securityLabel}${
+                    info > 0 ? ` · ${t("debug.securityInfo", { count: String(info) })}` : ""
+                  }. ${t("debug.securityRunForDetails")}
+                  <span class="mono">quantclaw security audit --deep</span>
+                  ${t("debug.securityForDetailsSuffix")}
                 </div>`
                 : nothing
             }

@@ -69,6 +69,13 @@ export const zh_TW: TranslationMap = {
     eventLog: "事件日誌",
     eventLogSubtitle: "最新網關事件。",
     noEventsYet: "暫無事件。",
+    securityAudit: "安全審計",
+    securityCritical: "{count} 個嚴重問題",
+    securityWarnings: "{count} 個警告",
+    securityInfo: "{count} 條資訊",
+    securityNoCriticalIssues: "沒有嚴重問題",
+    securityRunForDetails: "執行",
+    securityForDetailsSuffix: "查看詳情。",
   },
   overview: {
     access: {

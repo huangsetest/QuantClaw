@@ -69,6 +69,13 @@ export const pt_BR: TranslationMap = {
     eventLog: "Log de Eventos",
     eventLogSubtitle: "Últimos eventos do gateway.",
     noEventsYet: "Nenhum evento ainda.",
+    securityAudit: "Auditoria de segurança",
+    securityCritical: "{count} críticos",
+    securityWarnings: "{count} avisos",
+    securityInfo: "{count} infos",
+    securityNoCriticalIssues: "Nenhum problema crítico",
+    securityRunForDetails: "Execute",
+    securityForDetailsSuffix: "para ver detalhes.",
   },
   overview: {
     access: {
