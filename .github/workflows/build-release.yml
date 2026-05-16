@@ -3,20 +3,19 @@ name: Build QuantClaw Release
 on:
   push:
     branches: [ "main", "master" ]
-  workflow_dispatch: # 允许您在 Actions 页面手动点击按钮触发
+  workflow_dispatch: 
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. 拉取源码（确保递归拉取可能存在的 C++ 子模块）
     - name: Checkout repository
       uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    # 2. 核心修复：安装必要的系统级编译环境以及缺少的 spdlog 日志库
+    # 核心修复：在末尾追加了 libcurl4-openssl-dev
     - name: Install Dependencies
       run: |
         sudo apt-get update
@@ -25,20 +24,18 @@ jobs:
           cmake \
           clang \
           libspdlog-dev \
-          libssl-dev
+          libssl-dev \
+          libcurl4-openssl-dev
 
-    # 3. 创建构建目录并运行 CMake 配置
     - name: Configure CMake
       run: |
         mkdir -p build
         cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-    # 4. 执行真正的 C++ 编译
     - name: Build Project
       run: |
         cmake --build build --config Release
 
-    # 5. 将编译好的全套产物打包上传，供您下载
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
