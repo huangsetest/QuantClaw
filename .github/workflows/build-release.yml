@@ -2,33 +2,45 @@ name: Build QuantClaw Release
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:  # 允许你手动点按钮触发编译
+    branches: [ "main", "master" ]
+  workflow_dispatch: # 允许您在 Actions 页面手动点击按钮触发
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 用 Ubuntu 系统编译
+    runs-on: ubuntu-latest
+
     steps:
-      - name: 拉取代码
-        uses: actions/checkout@v4
+    # 1. 拉取源码（确保递归拉取可能存在的 C++ 子模块）
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
 
-      - name: 安装依赖
-        run: |
-          sudo apt update
-          sudo apt install -y build-essential cmake git libssl-dev
+    # 2. 核心修复：安装必要的系统级编译环境以及缺少的 spdlog 日志库
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          build-essential \
+          cmake \
+          clang \
+          libspdlog-dev \
+          libssl-dev
 
-      - name: 编译项目
-        run: |
-          mkdir -p build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
-          make -j$(nproc)
+    # 3. 创建构建目录并运行 CMake 配置
+    - name: Configure CMake
+      run: |
+        mkdir -p build
+        cmake -B build -DCMAKE_BUILD_TYPE=Release
 
-      - name: 发布到 Release
-        uses: softprops/action-gh-release@v1
-        with:
-          name: QuantClaw Build ${{ github.sha }}
-          tag_name: build-${{ github.sha }}
-          files: |
-            build/quantclaw
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    # 4. 执行真正的 C++ 编译
+    - name: Build Project
+      run: |
+        cmake --build build --config Release
+
+    # 5. 将编译好的全套产物打包上传，供您下载
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: QuantClaw-Linux-Release
+        path: build/
